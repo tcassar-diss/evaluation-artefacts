@@ -3,6 +3,8 @@ kubeburner
 nasa
 ltp
 
+results/nginx/nginx_bench
+
 !results/fio
 !results/ltp
 !results/nasa
