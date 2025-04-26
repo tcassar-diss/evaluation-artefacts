@@ -1,0 +1,8 @@
+fio
+kubeburner
+nasa
+ltp
+
+!results/fio
+!results/ltp
+!results/nasa
