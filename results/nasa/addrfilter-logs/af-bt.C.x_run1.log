@@ -1,0 +1,72 @@
+{"level":"info","ts":1745669011.877359,"caller":"frontend/addrfilter.go:53","msg":"=== Launching addrfilter ==="}
+{"level":"info","ts":1745669012.0788527,"caller":"filter/filter.go:303","msg":"configuring bpf kill mode","mode":0}
+
+
+ NAS Parallel Benchmarks (NPB3.4-OMP) - BT Benchmark
+
+ No input file inputbt.data. Using compiled defaults
+ Size:  162x 162x 162
+ Iterations:  200       dt:   0.0001000
+ Number of available threads:    96
+
+{"level":"info","ts":1745669012.2324188,"caller":"filter/filter.go:113","msg":"adding process to filter list","pid":1237648}
+{"level":"info","ts":1745669012.2326946,"caller":"filter/filter.go:381","msg":"updating libc address space","start":"0x7ffff7800000","end":"0x7ffff7a05000"}
+ Time step    1
+ Time step   20
+ Time step   40
+ Time step   60
+ Time step   80
+ Time step  100
+ Time step  120
+ Time step  140
+ Time step  160
+ Time step  180
+ Time step  200
+ Verification being performed for class C
+ accuracy setting for epsilon =  0.1000000000000E-07
+ Comparison of RMS-norms of residual
+           1 0.6239811655176E+04 0.6239811655176E+04 0.1020297288481E-14
+           2 0.5079323919042E+03 0.5079323919042E+03 0.7833797142449E-15
+           3 0.1542353009301E+04 0.1542353009301E+04 0.2948399932726E-15
+           4 0.1330238792929E+04 0.1330238792929E+04 0.8546348093735E-15
+           5 0.1160408742844E+05 0.1160408742844E+05 0.7837709836141E-15
+ Comparison of RMS-norms of solution error
+           1 0.1646200836909E+03 0.1646200836909E+03 0.1726503157644E-15
+           2 0.1149710790382E+02 0.1149710790382E+02 0.6180186719164E-15
+           3 0.4120744620746E+02 0.4120744620746E+02 0.1724306651237E-14
+           4 0.3708765105969E+02 0.3708765105969E+02 0.5747541692110E-15
+           5 0.3621105305184E+03 0.3621105305184E+03 0.1098846618617E-14
+ Verification Successful
+
+
+ BT Benchmark Completed.
+ Class           =                        C
+ Size            =            162x 162x 162
+ Iterations      =                      200
+ Time in seconds =                    28.79
+ Total threads   =                       96
+ Avail threads   =                       96
+ Mop/s total     =                 99544.44
+ Mop/s/thread    =                  1036.92
+ Operation type  =           floating point
+ Verification    =               SUCCESSFUL
+ Version         =                    3.4.3
+ Compile date    =              07 Apr 2025
+
+ Compile options:
+    FC           = gfortran
+    FLINK        = $(FC)
+    F_LIB        = (none)
+    F_INC        = (none)
+    FFLAGS       = -O3 -fopenmp
+    FLINKFLAGS   = $(FFLAGS)
+    RAND         = (none)
+
+
+ Please send all errors/feedbacks to:
+
+ NPB Development Team
+ npb@nas.nasa.gov
+
+
+{"level":"info","ts":1745669041.23116,"caller":"filter/filter.go:209","msg":"warn buffer closed, exiting..."}

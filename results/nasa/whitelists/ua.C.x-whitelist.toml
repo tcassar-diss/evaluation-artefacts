@@ -1,0 +1,4 @@
+[files]
+  "libgfortran.so.5.0.0" = [1, 12]
+  "libgomp.so.1.0.0" = [202]
+  "ua.C.x" = [11, 231]

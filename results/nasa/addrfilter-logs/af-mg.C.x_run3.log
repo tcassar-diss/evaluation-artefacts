@@ -1,0 +1,58 @@
+{"level":"info","ts":1745669253.3579535,"caller":"frontend/addrfilter.go:53","msg":"=== Launching addrfilter ==="}
+{"level":"info","ts":1745669253.5654473,"caller":"filter/filter.go:303","msg":"configuring bpf kill mode","mode":0}
+
+
+ NAS Parallel Benchmarks (NPB3.4-OMP) - MG Benchmark
+
+ No input file. Using compiled defaults 
+{"level":"info","ts":1745669253.7274415,"caller":"filter/filter.go:113","msg":"adding process to filter list","pid":1248906}
+{"level":"info","ts":1745669253.727692,"caller":"filter/filter.go:381","msg":"updating libc address space","start":"0x7ffff7800000","end":"0x7ffff7a05000"}
+ Size:  512x 512x 512  (class C)
+ Iterations:                     20
+ Number of available threads:    96
+
+ Initialization time:           0.645 seconds
+
+  iter   1
+  iter   5
+  iter  10
+  iter  15
+  iter  20
+
+ Benchmark completed 
+ VERIFICATION SUCCESSFUL 
+ L2 Norm is  0.5706732285740E-06
+ Error is    0.5974185299033E-13
+
+
+ MG Benchmark Completed.
+ Class           =                        C
+ Size            =            512x 512x 512
+ Iterations      =                       20
+ Time in seconds =                     5.70
+ Total threads   =                       96
+ Avail threads   =                       96
+ Mop/s total     =                 27322.59
+ Mop/s/thread    =                   284.61
+ Operation type  =           floating point
+ Verification    =               SUCCESSFUL
+ Version         =                    3.4.3
+ Compile date    =              07 Apr 2025
+
+ Compile options:
+    FC           = gfortran
+    FLINK        = $(FC)
+    F_LIB        = (none)
+    F_INC        = (none)
+    FFLAGS       = -O3 -fopenmp
+    FLINKFLAGS   = $(FFLAGS)
+    RAND         = randi8
+
+
+ Please send all errors/feedbacks to:
+
+ NPB Development Team
+ npb@nas.nasa.gov
+
+
+{"level":"info","ts":1745669260.1069453,"caller":"filter/filter.go:209","msg":"warn buffer closed, exiting..."}

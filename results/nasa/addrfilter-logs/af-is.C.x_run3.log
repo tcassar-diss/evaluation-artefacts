@@ -1,0 +1,56 @@
+{"level":"info","ts":1745669162.2677662,"caller":"frontend/addrfilter.go:53","msg":"=== Launching addrfilter ==="}
+{"level":"info","ts":1745669162.4724784,"caller":"filter/filter.go:303","msg":"configuring bpf kill mode","mode":0}
+{"level":"info","ts":1745669162.6260667,"caller":"filter/filter.go:113","msg":"adding process to filter list","pid":1244975}
+{"level":"info","ts":1745669162.6276736,"caller":"filter/filter.go:381","msg":"updating libc address space","start":"0x7ffff7c00000","end":"0x7ffff7e05000"}
+
+
+ NAS Parallel Benchmarks (NPB3.4-OMP) - IS Benchmark
+
+ Size:  134217728  (class C)
+ Iterations:  10
+ Number of available threads:  96
+
+
+   iteration
+        1
+        2
+        3
+        4
+        5
+        6
+        7
+        8
+        9
+        10
+
+
+ IS Benchmark Completed
+ Class           =                        C
+ Size            =                134217728
+ Iterations      =                       10
+ Time in seconds =                     0.37
+ Total threads   =                       96
+ Avail threads   =                       96
+ Mop/s total     =                  3646.68
+ Mop/s/thread    =                    37.99
+ Operation type  =              keys ranked
+ Verification    =               SUCCESSFUL
+ Version         =                    3.4.3
+ Compile date    =              07 Apr 2025
+
+ Compile options:
+    CC           = gcc
+    CLINK        = $(CC)
+    C_LIB        = -lm
+    C_INC        = (none)
+    CFLAGS       = -O3 -fopenmp
+    CLINKFLAGS   = $(CFLAGS)
+
+
+ Please send all errors/feedbacks to:
+
+ NPB Development Team
+ npb@nas.nasa.gov
+
+
+{"level":"info","ts":1745669163.2521522,"caller":"filter/filter.go:209","msg":"warn buffer closed, exiting..."}
