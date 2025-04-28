@@ -1,0 +1,46 @@
+write_throughput: (g=0): rw=write, bs=(R) 1024KiB-1024KiB, (W) 1024KiB-1024KiB, (T) 1024KiB-1024KiB, ioengine=psync, iodepth=64
+...
+fio-3.39-38-gf18c
+Starting 16 processes
+note: both iodepth >= 1 and synchronous I/O engine are selected, queue depth will be capped at 1
+note: both iodepth >= 1 and synchronous I/O engine are selected, queue depth will be capped at 1
+note: both iodepth >= 1 and synchronous I/O engine are selected, queue depth will be capped at 1
+note: both iodepth >= 1 and synchronous I/O engine are selected, queue depth will be capped at 1
+note: both iodepth >= 1 and synchronous I/O engine are selected, queue depth will be capped at 1
+note: both iodepth >= 1 and synchronous I/O engine are selected, queue depth will be capped at 1
+note: both iodepth >= 1 and synchronous I/O engine are selected, queue depth will be capped at 1
+note: both iodepth >= 1 and synchronous I/O engine are selected, queue depth will be capped at 1
+note: both iodepth >= 1 and synchronous I/O engine are selected, queue depth will be capped at 1
+note: both iodepth >= 1 and synchronous I/O engine are selected, queue depth will be capped at 1
+note: both iodepth >= 1 and synchronous I/O engine are selected, queue depth will be capped at 1
+note: both iodepth >= 1 and synchronous I/O engine are selected, queue depth will be capped at 1
+note: both iodepth >= 1 and synchronous I/O engine are selected, queue depth will be capped at 1
+note: both iodepth >= 1 and synchronous I/O engine are selected, queue depth will be capped at 1
+note: both iodepth >= 1 and synchronous I/O engine are selected, queue depth will be capped at 1
+note: both iodepth >= 1 and synchronous I/O engine are selected, queue depth will be capped at 1
+
+write_throughput: (groupid=0, jobs=16): err= 0: pid=2863197: Sun Apr 27 22:29:03 2025
+  write: IOPS=507, BW=507MiB/s (532MB/s)(14.9GiB/30037msec); 0 zone resets
+    clat (usec): min=2145, max=72850, avg=31471.67, stdev=2699.43
+     lat (usec): min=2196, max=72896, avg=31515.74, stdev=2699.19
+    clat percentiles (usec):
+     |  1.00th=[25822],  5.00th=[31065], 10.00th=[31065], 20.00th=[31065],
+     | 30.00th=[31065], 40.00th=[31065], 50.00th=[31327], 60.00th=[31327],
+     | 70.00th=[31589], 80.00th=[31851], 90.00th=[32375], 95.00th=[32900],
+     | 99.00th=[38536], 99.50th=[51119], 99.90th=[61080], 99.95th=[62129],
+     | 99.99th=[65274]
+   bw (  KiB/s): min=468032, max=567296, per=100.00%, avg=520351.46, stdev=1089.31, samples=948
+   iops        : min=  455, max=  554, avg=507.56, stdev= 1.08, samples=948
+  lat (msec)   : 4=0.02%, 10=0.16%, 20=0.26%, 50=99.04%, 100=0.53%
+  cpu          : usr=0.19%, sys=0.38%, ctx=15367, majf=0, minf=580
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued rwts: total=0,15235,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=64
+
+Run status group 0 (all jobs):
+  WRITE: bw=507MiB/s (532MB/s), 507MiB/s-507MiB/s (532MB/s-532MB/s), io=14.9GiB (16.0GB), run=30037-30037msec
+
+Disk stats (read/write):
+  sdc: ios=0/16363, sectors=0/33330480, merge=0/70, ticks=0/511387, in_queue=511646, util=91.52%
