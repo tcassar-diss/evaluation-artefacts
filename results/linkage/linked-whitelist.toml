@@ -1,0 +1,4 @@
+[files]
+  "libgetpid.so" = [39]
+  "libprintf.so" = [1, 5, 12, 318]
+  linked = [231]
