@@ -1,0 +1,12 @@
+scaling factor: 1
+query mode: simple
+number of clients: 48
+number of threads: 48
+maximum number of tries: 1
+duration: 30 s
+number of transactions actually processed: 46507
+number of failed transactions: 0 (0.000%)
+latency average = 30.964 ms
+initial connection time = 43.469 ms
+tps = 1550.182177 (without initial connection time)
+
