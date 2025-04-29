@@ -1,0 +1,190 @@
+Found 3 file(s) matching '*.csv' in './base'. Processing...
+--> Processing file: ./base/benchmark_results_20250422_221027.csv
+--> Processing file: ./base/benchmark_results_20250422_223203.csv
+--> Processing file: ./base/benchmark_results_20250422_223229.csv
+----------------------------------------------------------------------
+Redis Aggregated Benchmark Summary
+Directory Processed : ./base
+CSV Files Processed : 3
+----------------------------------------------------------------------
+Test: GET
+  - rps               : 99515.62 +- 26287.78 (n=3)
+  - avg_latency_ms    : 0.272 +- 0.061 (n=3)
+  - min_latency_ms    : 0.064 +- 0.014 (n=3)
+  - p50_latency_ms    : 0.279 +- 0.070 (n=3)
+  - p95_latency_ms    : 0.346 +- 0.051 (n=3)
+  - p99_latency_ms    : 0.476 +- 0.086 (n=3)
+  - max_latency_ms    : 0.999 +- 0.451 (n=3)
+------------------------------
+Test: HSET
+  - rps               : 106417.48 +- 24404.67 (n=3)
+  - avg_latency_ms    : 0.261 +- 0.065 (n=3)
+  - min_latency_ms    : 0.075 +- 0.018 (n=3)
+  - p50_latency_ms    : 0.244 +- 0.072 (n=3)
+  - p95_latency_ms    : 0.356 +- 0.049 (n=3)
+  - p99_latency_ms    : 0.756 +- 0.009 (n=3)
+  - max_latency_ms    : 1.884 +- 0.342 (n=3)
+------------------------------
+Test: INCR
+  - rps               : 104008.60 +- 23852.35 (n=3)
+  - avg_latency_ms    : 0.262 +- 0.058 (n=3)
+  - min_latency_ms    : 0.061 +- 0.012 (n=3)
+  - p50_latency_ms    : 0.242 +- 0.074 (n=3)
+  - p95_latency_ms    : 0.351 +- 0.049 (n=3)
+  - p99_latency_ms    : 0.594 +- 0.158 (n=3)
+  - max_latency_ms    : 1.490 +- 0.754 (n=3)
+------------------------------
+Test: LPOP
+  - rps               : 112506.14 +- 26972.22 (n=3)
+  - avg_latency_ms    : 0.242 +- 0.065 (n=3)
+  - min_latency_ms    : 0.083 +- 0.024 (n=3)
+  - p50_latency_ms    : 0.234 +- 0.074 (n=3)
+  - p95_latency_ms    : 0.306 +- 0.072 (n=3)
+  - p99_latency_ms    : 0.463 +- 0.200 (n=3)
+  - max_latency_ms    : 0.900 +- 0.737 (n=3)
+------------------------------
+Test: LPUSH
+  - rps               : 112925.37 +- 29500.73 (n=3)
+  - avg_latency_ms    : 0.241 +- 0.074 (n=3)
+  - min_latency_ms    : 0.064 +- 0.014 (n=3)
+  - p50_latency_ms    : 0.242 +- 0.074 (n=3)
+  - p95_latency_ms    : 0.279 +- 0.090 (n=3)
+  - p99_latency_ms    : 0.340 +- 0.065 (n=3)
+  - max_latency_ms    : 0.628 +- 0.175 (n=3)
+------------------------------
+Test: LPUSH (needed to benchmark LRANGE)
+  - rps               : 111152.99 +- 28128.21 (n=3)
+  - avg_latency_ms    : 0.247 +- 0.072 (n=3)
+  - min_latency_ms    : 0.069 +- 0.023 (n=3)
+  - p50_latency_ms    : 0.242 +- 0.074 (n=3)
+  - p95_latency_ms    : 0.308 +- 0.077 (n=3)
+  - p99_latency_ms    : 0.527 +- 0.202 (n=3)
+  - max_latency_ms    : 1.471 +- 0.930 (n=3)
+------------------------------
+Test: LRANGE_100 (first 100 elements)
+  - rps               : 78089.84 +- 15372.24 (n=3)
+  - avg_latency_ms    : 0.359 +- 0.066 (n=3)
+  - min_latency_ms    : 0.192 +- 0.016 (n=3)
+  - p50_latency_ms    : 0.348 +- 0.058 (n=3)
+  - p95_latency_ms    : 0.428 +- 0.058 (n=3)
+  - p99_latency_ms    : 0.556 +- 0.203 (n=3)
+  - max_latency_ms    : 1.580 +- 1.346 (n=3)
+------------------------------
+Test: LRANGE_300 (first 300 elements)
+  - rps               : 39754.79 +- 4473.32 (n=3)
+  - avg_latency_ms    : 0.675 +- 0.063 (n=3)
+  - min_latency_ms    : 0.317 +- 0.051 (n=3)
+  - p50_latency_ms    : 0.666 +- 0.053 (n=3)
+  - p95_latency_ms    : 0.770 +- 0.053 (n=3)
+  - p99_latency_ms    : 0.978 +- 0.303 (n=3)
+  - max_latency_ms    : 3.138 +- 1.924 (n=3)
+------------------------------
+Test: LRANGE_500 (first 500 elements)
+  - rps               : 25033.07 +- 2271.81 (n=3)
+  - avg_latency_ms    : 1.078 +- 0.129 (n=3)
+  - min_latency_ms    : 0.325 +- 0.024 (n=3)
+  - p50_latency_ms    : 0.972 +- 0.072 (n=3)
+  - p95_latency_ms    : 1.690 +- 0.928 (n=3)
+  - p99_latency_ms    : 2.596 +- 1.342 (n=3)
+  - max_latency_ms    : 6.855 +- 3.242 (n=3)
+------------------------------
+Test: LRANGE_600 (first 600 elements)
+  - rps               : 23195.39 +- 1864.62 (n=3)
+  - avg_latency_ms    : 1.122 +- 0.091 (n=3)
+  - min_latency_ms    : 0.315 +- 0.053 (n=3)
+  - p50_latency_ms    : 1.106 +- 0.076 (n=3)
+  - p95_latency_ms    : 1.212 +- 0.093 (n=3)
+  - p99_latency_ms    : 1.559 +- 0.500 (n=3)
+  - max_latency_ms    : 7.631 +- 3.662 (n=3)
+------------------------------
+Test: MSET (10 keys)
+  - rps               : 119475.49 +- 31686.92 (n=3)
+  - avg_latency_ms    : 0.257 +- 0.051 (n=3)
+  - min_latency_ms    : 0.072 +- 0.014 (n=3)
+  - p50_latency_ms    : 0.252 +- 0.051 (n=3)
+  - p95_latency_ms    : 0.335 +- 0.035 (n=3)
+  - p99_latency_ms    : 0.388 +- 0.012 (n=3)
+  - max_latency_ms    : 0.618 +- 0.020 (n=3)
+------------------------------
+Test: PING_INLINE
+  - rps               : 121036.08 +- 3514.77 (n=3)
+  - avg_latency_ms    : 0.220 +- 0.007 (n=3)
+  - min_latency_ms    : 0.053 +- 0.005 (n=3)
+  - p50_latency_ms    : 0.199 +- 0.000 (n=3)
+  - p95_latency_ms    : 0.346 +- 0.061 (n=3)
+  - p99_latency_ms    : 0.711 +- 0.068 (n=3)
+  - max_latency_ms    : 1.650 +- 0.060 (n=3)
+------------------------------
+Test: PING_MBULK
+  - rps               : 128503.57 +- 2138.99 (n=3)
+  - avg_latency_ms    : 0.204 +- 0.009 (n=3)
+  - min_latency_ms    : 0.080 +- 0.035 (n=3)
+  - p50_latency_ms    : 0.199 +- 0.000 (n=3)
+  - p95_latency_ms    : 0.255 +- 0.042 (n=3)
+  - p99_latency_ms    : 0.378 +- 0.122 (n=3)
+  - max_latency_ms    : 0.868 +- 0.605 (n=3)
+------------------------------
+Test: RPOP
+  - rps               : 110713.23 +- 27366.98 (n=3)
+  - avg_latency_ms    : 0.251 +- 0.069 (n=3)
+  - min_latency_ms    : 0.072 +- 0.021 (n=3)
+  - p50_latency_ms    : 0.239 +- 0.069 (n=3)
+  - p95_latency_ms    : 0.346 +- 0.109 (n=3)
+  - p99_latency_ms    : 0.602 +- 0.263 (n=3)
+  - max_latency_ms    : 1.378 +- 0.855 (n=3)
+------------------------------
+Test: RPUSH
+  - rps               : 110998.02 +- 28691.18 (n=3)
+  - avg_latency_ms    : 0.249 +- 0.075 (n=3)
+  - min_latency_ms    : 0.067 +- 0.012 (n=3)
+  - p50_latency_ms    : 0.239 +- 0.069 (n=3)
+  - p95_latency_ms    : 0.316 +- 0.082 (n=3)
+  - p99_latency_ms    : 0.535 +- 0.220 (n=3)
+  - max_latency_ms    : 1.402 +- 0.774 (n=3)
+------------------------------
+Test: SADD
+  - rps               : 103498.44 +- 24154.88 (n=3)
+  - avg_latency_ms    : 0.262 +- 0.063 (n=3)
+  - min_latency_ms    : 0.069 +- 0.009 (n=3)
+  - p50_latency_ms    : 0.258 +- 0.060 (n=3)
+  - p95_latency_ms    : 0.343 +- 0.048 (n=3)
+  - p99_latency_ms    : 0.479 +- 0.124 (n=3)
+  - max_latency_ms    : 1.226 +- 0.903 (n=3)
+------------------------------
+Test: SET
+  - rps               : 116753.74 +- 11372.26 (n=3)
+  - avg_latency_ms    : 0.223 +- 0.022 (n=3)
+  - min_latency_ms    : 0.080 +- 0.029 (n=3)
+  - p50_latency_ms    : 0.199 +- 0.000 (n=3)
+  - p95_latency_ms    : 0.300 +- 0.070 (n=3)
+  - p99_latency_ms    : 0.519 +- 0.224 (n=3)
+  - max_latency_ms    : 1.023 +- 0.612 (n=3)
+------------------------------
+Test: SPOP
+  - rps               : 110400.47 +- 26109.44 (n=3)
+  - avg_latency_ms    : 0.248 +- 0.064 (n=3)
+  - min_latency_ms    : 0.061 +- 0.005 (n=3)
+  - p50_latency_ms    : 0.239 +- 0.069 (n=3)
+  - p95_latency_ms    : 0.322 +- 0.073 (n=3)
+  - p99_latency_ms    : 0.490 +- 0.218 (n=3)
+  - max_latency_ms    : 0.895 +- 0.623 (n=3)
+------------------------------
+Test: ZADD
+  - rps               : 113071.23 +- 26871.17 (n=3)
+  - avg_latency_ms    : 0.239 +- 0.066 (n=3)
+  - min_latency_ms    : 0.069 +- 0.023 (n=3)
+  - p50_latency_ms    : 0.236 +- 0.065 (n=3)
+  - p95_latency_ms    : 0.292 +- 0.072 (n=3)
+  - p99_latency_ms    : 0.343 +- 0.062 (n=3)
+  - max_latency_ms    : 0.484 +- 0.086 (n=3)
+------------------------------
+Test: ZPOPMIN
+  - rps               : 109628.80 +- 25604.94 (n=3)
+  - avg_latency_ms    : 0.249 +- 0.064 (n=3)
+  - min_latency_ms    : 0.069 +- 0.012 (n=3)
+  - p50_latency_ms    : 0.239 +- 0.069 (n=3)
+  - p95_latency_ms    : 0.335 +- 0.083 (n=3)
+  - p99_latency_ms    : 0.471 +- 0.194 (n=3)
+  - max_latency_ms    : 1.092 +- 1.037 (n=3)
+------------------------------
+----------------------------------------------------------------------
