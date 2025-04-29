@@ -1,0 +1,3 @@
+addrfilter: 20
+seccomp: 45
+privilege reduction: 55.56%
