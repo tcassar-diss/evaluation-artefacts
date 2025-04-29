@@ -1,0 +1,31 @@
+Found 3 file(s) matching '*.log' in 'adrft'. Processing...
+ - Parsing run1.log... Done.
+ - Parsing run2.log... Done.
+ - Parsing run3.log... Done.
+-----------------------------------------------------------------
+WRK Aggregated Performance Summary
+Directory Processed: adrft
+Valid Log Files Aggregated: 3
+-----------------------------------------------------------------
+Threads                  : 4
+Connections              : 200
+-----------------------------------------------------------------
+Latency Stats:
+  Avg Latency            : 1.29 ± 0.04 ms (n=3)
+  Stdev Latency          : 0.67 ± 0.18 ms (n=3)
+  Max Latency            : 14.08 ± 7.21 ms (n=3)
+  Avg Latency Stdev %    : 81.27 ± 10.57 % (n=3)
+-----------------------------------------------------------------
+Req/Sec Stats (Thread Avg):
+  Avg Req/Sec            : 39117 ± 125 req/s (n=3)
+  Stdev Req/Sec          : 2497 ± 348 req/s (n=3)
+  Max Req/Sec            : 53490 ± 5634 req/s (n=3)
+  Avg Req/Sec Stdev %    : 76.42 ± 4.84 % (n=3)
+-----------------------------------------------------------------
+Overall Summary Stats:
+  Total Requests         : 4670062 ± 14641 reqs (n=3)
+  Duration               : 30.01 ± 0.01 s (n=3)
+  Total Data Read        : 1300.48 ± 0.00 MB (n=3)
+  Overall Requests/sec   : 155640.82 ± 490.75 req/s (n=3)
+  Overall Transfer/sec   : 43.34 ± 0.14 MB/s (n=3)
+-----------------------------------------------------------------

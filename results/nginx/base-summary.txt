@@ -1,0 +1,31 @@
+Found 3 file(s) matching '*.log' in 'base'. Processing...
+ - Parsing run1.log... Done.
+ - Parsing run2.log... Done.
+ - Parsing run3.log... Done.
+-----------------------------------------------------------------
+WRK Aggregated Performance Summary
+Directory Processed: base
+Valid Log Files Aggregated: 3
+-----------------------------------------------------------------
+Threads                  : 4
+Connections              : 200
+-----------------------------------------------------------------
+Latency Stats:
+  Avg Latency            : 0.95 ± 0.01 ms (n=3)
+  Stdev Latency          : 0.34 ± 0.02 ms (n=3)
+  Max Latency            : 10.49 ± 5.30 ms (n=3)
+  Avg Latency Stdev %    : 70.60 ± 3.64 % (n=3)
+-----------------------------------------------------------------
+Req/Sec Stats (Thread Avg):
+  Avg Req/Sec            : 51683 ± 115 req/s (n=3)
+  Stdev Req/Sec          : 3393 ± 787 req/s (n=3)
+  Max Req/Sec            : 72017 ± 7156 req/s (n=3)
+  Avg Req/Sec Stdev %    : 87.14 ± 3.78 % (n=3)
+-----------------------------------------------------------------
+Overall Summary Stats:
+  Total Requests         : 6170752 ± 14024 reqs (n=3)
+  Duration               : 30.00 ± 0.00 s (n=3)
+  Total Data Read        : 1716.91 ± 5.91 MB (n=3)
+  Overall Requests/sec   : 205673.07 ± 470.91 req/s (n=3)
+  Overall Transfer/sec   : 57.27 ± 0.13 MB/s (n=3)
+-----------------------------------------------------------------

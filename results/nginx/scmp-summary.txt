@@ -1,0 +1,31 @@
+Found 3 file(s) matching '*.log' in 'scmp'. Processing...
+ - Parsing run1.log... Done.
+ - Parsing run2.log... Done.
+ - Parsing run3.log... Done.
+-----------------------------------------------------------------
+WRK Aggregated Performance Summary
+Directory Processed: scmp
+Valid Log Files Aggregated: 3
+-----------------------------------------------------------------
+Threads                  : 4
+Connections              : 200
+-----------------------------------------------------------------
+Latency Stats:
+  Avg Latency            : 0.95 ± 0.01 ms (n=3)
+  Stdev Latency          : 0.23 ± 0.06 ms (n=3)
+  Max Latency            : 2.62 ± 1.16 ms (n=3)
+  Avg Latency Stdev %    : 74.80 ± 7.07 % (n=3)
+-----------------------------------------------------------------
+Req/Sec Stats (Thread Avg):
+  Avg Req/Sec            : 52597 ± 421 req/s (n=3)
+  Stdev Req/Sec          : 3280 ± 1223 req/s (n=3)
+  Max Req/Sec            : 56440 ± 956 req/s (n=3)
+  Avg Req/Sec Stdev %    : 76.07 ± 17.54 % (n=3)
+-----------------------------------------------------------------
+Overall Summary Stats:
+  Total Requests         : 291923 ± 85608 reqs (n=2)
+  Duration               : 1.40 ± 0.42 s (n=2)
+  Total Data Read        : 81.30 ± 23.86 MB (n=2)
+  Overall Requests/sec   : 207796.68 ± 1746.29 req/s (n=3)
+  Overall Transfer/sec   : 57.87 ± 0.49 MB/s (n=3)
+-----------------------------------------------------------------

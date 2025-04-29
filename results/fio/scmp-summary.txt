@@ -1,0 +1,22 @@
+Found 3 file(s) matching '*.log' in 'scmp'. Processing...
+ - Parsing run1.log... Done.
+ - Parsing run2.log... Done.
+ - Parsing run3.log... Done.
+------------------------------------------------------------
+FIO Aggregated Performance Summary
+Directory Processed: scmp
+Valid Log Files Aggregated: 3
+------------------------------------------------------------
+Avg Jobs          : N/A
+Avg Duration      : 30.03 ± 0.00 s (n=3)
+Avg Total Data    : 15.07 ± 0.06 GiB (n=3)
+Avg Bandwidth     : 512.67 ± 2.31 MiB/s (n=3)
+Avg IOPS          : 512.00 ± 2.65  (n=3)
+Avg CLat          : 31149.45 ± 149.52 µs (n=3)  [31.15 ± 0.15 ms]
+CLat Percentiles:
+  - 95.00th %-ile : N/A
+  - 99.00th %-ile : 39060 ± 0 µs (n=3)  [39.06 ± 0.00 ms]
+  - 99.90th %-ile : N/A
+Avg Disk Util     : 91.22 ± 1.50 % (n=3)
+Avg CPU Usage     : 0.20 ± 0.01% usr / 0.38 ± 0.02% sys (n=3)
+------------------------------------------------------------

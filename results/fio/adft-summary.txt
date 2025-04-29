@@ -1,0 +1,22 @@
+Found 3 file(s) matching '*.log' in 'adft'. Processing...
+ - Parsing run1.log... Done.
+ - Parsing run2.log... Done.
+ - Parsing run3.log... Done.
+------------------------------------------------------------
+FIO Aggregated Performance Summary
+Directory Processed: adft
+Valid Log Files Aggregated: 3
+------------------------------------------------------------
+Avg Jobs          : 16.00 ± 0.00  (n=1)
+Avg Duration      : 30.03 ± 0.01 s (n=3)
+Avg Total Data    : 15.03 ± 0.12 GiB (n=3)
+Avg Bandwidth     : 511.67 ± 4.04 MiB/s (n=3)
+Avg IOPS          : 511.33 ± 4.62  (n=3)
+Avg CLat          : 31196.48 ± 269.21 µs (n=3)  [31.20 ± 0.27 ms]
+CLat Percentiles:
+  - 95.00th %-ile : N/A
+  - 99.00th %-ile : 39235 ± 1320 µs (n=3)  [39.23 ± 1.32 ms]
+  - 99.90th %-ile : N/A
+Avg Disk Util     : 89.48 ± 1.23 % (n=3)
+Avg CPU Usage     : 0.20 ± 0.01% usr / 0.42 ± 0.02% sys (n=3)
+------------------------------------------------------------
