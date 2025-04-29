@@ -1,0 +1,22 @@
+====================================================================================================
+pgbench Benchmark Comparison Summary
+Baseline (Dir1): base
+Comparison (Dir2): adrft
+====================================================================================================
+Configuration / Metric         | base (Mean+/-Stdev)       | adrft (Mean+/-Stdev)      | % Diff      
+----------------------------------------------------------------------------------------------------
+Configuration:
+  Scaling Factor               | 1 (n=3, consistent)       | 1 (n=3, consistent)       |             
+  Query Mode                   | simple (n=3) (consistent) | simple (n=3) (consistent) |             
+  Clients                      | 48 (n=3, consistent)      | 48 (n=3, consistent)      |             
+  Threads                      | 48 (n=3, consistent)      | 48 (n=3, consistent)      |             
+  Duration S                   | 30 (n=3, consistent)      | 30 (n=3, consistent)      |             
+----------------------------------------------------------------------------------------------------
+Results:
+  Tps                          | 1547.44 +/- 9.84 (n=3)    | 1311.27 +/- 8.21 (n=3)    | -15.26%     
+  Latency Avg (ms)             | 31.020 +/- 0.197 (n=3)    | 36.607 +/- 0.229 (n=3)    | +18.01%     
+  Transactions Processed       | 46418 +/- 306 (n=3)       | 39323 +/- 245 (n=3)       | -15.28%     
+  Transactions Failed Count    | 0 +/- 0 (n=3)             | 0 +/- 0 (n=3)             | 0.00%       
+  Transactions Failed (%)      | 0.000 +/- 0.000 (n=3)     | 0.000 +/- 0.000 (n=3)     | 0.00%       
+  Initial Conn Time (ms)       | 37.01 +/- 7.76 (n=3)      | 42.59 +/- 0.44 (n=3)      | +15.06%     
+----------------------------------------------------------------------------------------------------

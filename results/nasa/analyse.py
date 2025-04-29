@@ -1,14 +1,17 @@
 # Ensure only ASCII characters are used in this script
 """
 Processes NASA NPB benchmark log files (*.log) from two directories,
-prints an aggregated summary for each directory based on benchmark type,
+calculates statistics (mean +/- stdev) for each benchmark within each file,
+prints a comparison summary including percentage differences (Dir2 vs Dir1),
 and generates comparison plots saved as PDF files.
 Uses only ASCII characters.
 """
 
 import argparse
 import collections
+import csv  # Although not reading CSV, keep for potential future use? No, remove.
 import glob
+import math  # Needed for checking isnan/isinf
 import os
 import re
 import statistics
@@ -35,14 +38,14 @@ except ImportError:
 LOG_FILE_PATTERN = "*.log"
 # Key metrics to extract and aggregate
 METRIC_KEYS = ["time_s", "mops_total"]
+# Threshold for baseline mean close to zero to avoid division issues
+ZERO_THRESHOLD = 1e-9
 
 
 # --- NPB Log Parsing Function ---
-
-
+# (parse_npb_log remains the same as the previous version)
 def parse_npb_log(filepath):
     """Parses a single NPB log file to extract key metrics."""
-    # Metrics dictionary for a single run (file)
     metrics = {
         "benchmark_name": None,
         "time_s": None,
@@ -66,8 +69,6 @@ def parse_npb_log(filepath):
         with open(filepath, "r", encoding="utf-8", errors="replace") as f:
             content = f.read()
 
-        # --- Extracting Metrics using Regular Expressions ---
-
         # Benchmark Name (e.g., BT, CG, EP)
         name_match = re.search(
             r"NAS Parallel Benchmarks.*-\s+(\w+)\s+Benchmark", content
@@ -76,15 +77,6 @@ def parse_npb_log(filepath):
             metrics["benchmark_name"] = name_match.group(1).upper()
         else:
             metrics["error"] = "Could not find benchmark name header."
-            # Try to guess from filename? Safer to error out.
-            # filename_base = os.path.basename(filepath)
-            # common_names = ['bt', 'cg', 'ep', 'ft', 'is', 'lu', 'mg', 'sp', 'ua']
-            # for name in common_names:
-            #      if name in filename_base.lower():
-            #           metrics["benchmark_name"] = name.upper()
-            #           print(f"   Warning: Guessed benchmark name '{metrics['benchmark_name']}' from filename for {filepath}", file=sys.stderr)
-            #           break
-            # if not metrics["benchmark_name"]:
             return metrics  # Cannot proceed without benchmark name
 
         # Time in seconds
@@ -111,15 +103,14 @@ def parse_npb_log(filepath):
         veri_match = re.search(r"Verification\s+=\s*(\w+)", content)
         if veri_match:
             metrics["verification"] = veri_match.group(1).upper()
-        elif "VERIFICATION SUCCESSFUL" in content:  # Handle CG/MG format
+        elif "VERIFICATION SUCCESSFUL" in content:
             metrics["verification"] = "SUCCESSFUL"
 
     except Exception as e:
-        # Ensure error message uses only ASCII characters if possible
         err_msg = str(e).encode("ascii", "replace").decode("ascii")
         metrics["error"] = f"An error occurred during parsing {filepath}: {err_msg}"
 
-    # --- Basic Validation ---
+    # Basic Validation
     if metrics["time_s"] is None or metrics["mops_total"] is None:
         if not metrics["error"]:
             metrics["error"] = (
@@ -130,14 +121,12 @@ def parse_npb_log(filepath):
 
 
 # --- Aggregation Function ---
-
-
+# (aggregate_npb_results remains the same as the previous version)
 def aggregate_npb_results(all_run_data):
     """
     Aggregates results from multiple NPB runs (parsed dictionaries).
     Groups by benchmark name.
     """
-    # Structure: benchmark_name -> metric_name -> list_of_values
     collected_data = collections.defaultdict(lambda: collections.defaultdict(list))
     valid_run_count_per_bench = collections.defaultdict(int)
     configs = collections.defaultdict(lambda: {"class": set(), "threads": set()})
@@ -148,18 +137,16 @@ def aggregate_npb_results(all_run_data):
     # Step 1: Collect all values and config info, grouped by benchmark
     for run_data in all_run_data:
         if not run_data or not run_data.get("benchmark_name"):
-            continue  # Skip if basic info is missing
+            continue
 
         bench_name = run_data["benchmark_name"]
         valid_run_count_per_bench[bench_name] += 1
 
-        # Collect metrics
-        for key in METRIC_KEYS:
+        for key in METRIC_KEYS:  # Use defined METRIC_KEYS
             value = run_data.get(key)
             if value is not None:
                 collected_data[bench_name][key].append(value)
 
-        # Collect config info for consistency check
         if run_data.get("class"):
             configs[bench_name]["class"].add(run_data["class"])
         if run_data.get("threads"):
@@ -178,7 +165,6 @@ def aggregate_npb_results(all_run_data):
                     "stdev": stdev,
                     "count": count,
                 }
-        # Add config info to the aggregated stats for this benchmark
         cfg = configs[bench_name]
         aggregated_stats[bench_name]["class"] = (
             list(cfg["class"])[0] if len(cfg["class"]) == 1 else "Mixed"
@@ -190,81 +176,105 @@ def aggregate_npb_results(all_run_data):
             bench_name
         ]
 
-    if not aggregated_stats:  # Check if any stats were actually calculated
+    if not aggregated_stats:
         return None
 
     return aggregated_stats
 
 
-# --- Summary Printing Function ---
+# --- Comparison Summary Printing Function (Modified) ---
 
 
-def print_npb_summary(agg_results, directory_path):
-    """Prints the aggregated NPB summary (mean +/- stdev) for a directory."""
-    if not agg_results:
-        print(
-            f"\n--- No aggregated results to display for directory: {directory_path} ---",
-            file=sys.stderr,
-        )
+def print_comparison_summary(results1, results2, label1, label2):
+    """Prints a side-by-side comparison summary including percentage difference."""
+    if not results1 or not results2:
+        print("\nCannot print comparison summary due to missing data.")
         return
 
-    print("\n" + "=" * 75)
-    print(f"NPB Aggregated Benchmark Summary")
-    print(f"Directory Processed : {directory_path}")
-    print("=" * 75)
+    label1_short = os.path.basename(label1.rstrip("/\\")) or "Baseline"
+    label2_short = os.path.basename(label2.rstrip("/\\")) or "Comparison"
 
-    # Header
+    all_benchmarks = sorted(list(set(results1.keys()) | set(results2.keys())))
+
+    print("\n" + "=" * 95)
+    print("NPB Benchmark Comparison Summary")
+    print(f"Baseline (Dir1): {label1_short}")
+    print(f"Comparison (Dir2): {label2_short}")
+    print("=" * 95)
+    # Header line
+    header_format = "{:<10} | {:<15} | {:<25} | {:<25} | {:<12}"
     print(
-        f"{'Benchmark':<10} {'Class':<6} {'Threads':<8} | {'Metric':<15} | {'Mean +/- Stdev':<25} {'Runs (n)':<5}"
-    )
-    print("-" * 75)
-
-    # Sort benchmarks for consistent output
-    for benchmark_name in sorted(agg_results.keys()):
-        bench_data = agg_results[benchmark_name]
-        class_val = bench_data.get("class", "N/A")
-        threads_val = bench_data.get("threads", "N/A")
-        run_count = bench_data.get("run_count", 0)
-
-        # Print benchmark info once
-        print(
-            f"{benchmark_name:<10} {str(class_val):<6} {str(threads_val):<8} |", end=""
+        header_format.format(
+            "Benchmark",
+            "Metric",
+            f"{label1_short} (Mean+/-Stdev)",
+            f"{label2_short} (Mean+/-Stdev)",
+            "% Diff",
         )
+    )
+    print("-" * 95)
 
-        # Print Time
-        time_data = bench_data.get("time_s")
-        if time_data:
-            mean_str = f"{time_data['mean']:.2f}"
-            stdev_str = f"{time_data['stdev']:.2f}"
+    for benchmark in all_benchmarks:
+        # Get config info (assume consistent or take from first dict)
+        res1_bench = results1.get(benchmark, {})
+        res2_bench = results2.get(benchmark, {})
+        class_val = res1_bench.get("class", res2_bench.get("class", "N/A"))
+        threads_val = res1_bench.get("threads", res2_bench.get("threads", "N/A"))
+
+        print(
+            f"{benchmark:<10} (C:{str(class_val)}, T:{str(threads_val)})"
+        )  # Print benchmark info once
+
+        for metric in METRIC_KEYS:
+            res1 = res1_bench.get(metric)
+            res2 = res2_bench.get(metric)
+
+            def format_res(res):
+                if res:
+                    mean_str = f"{res['mean']:.2f}"
+                    stdev_str = f"{res['stdev']:.2f}"
+                    count = res["count"]
+                    return f"{mean_str} +/- {stdev_str} (n={count})"
+                else:
+                    return "N/A"
+
+            res1_str = format_res(res1)
+            res2_str = format_res(res2)
+
+            # Calculate Percentage Difference
+            percent_diff_str = "N/A"
+            if res1 and res2 and res1["mean"] is not None and res2["mean"] is not None:
+                mean1 = res1["mean"]
+                mean2 = res2["mean"]
+                # Avoid division by zero or near-zero
+                if abs(mean1) > ZERO_THRESHOLD:
+                    percent_diff = ((mean2 - mean1) / mean1) * 100.0
+                    # Check for NaN or Inf just in case, though abs() check should prevent
+                    if not math.isnan(percent_diff) and not math.isinf(percent_diff):
+                        percent_diff_str = (
+                            f"{percent_diff:+.2f}%"  # Add sign explicitly
+                        )
+                elif abs(mean2) < ZERO_THRESHOLD:  # Both are near zero
+                    percent_diff_str = "0.00%"
+                # else: Mean1 is zero/small, Mean2 is not - difference is large/infinite, leave as N/A
+
+            metric_label = metric.replace("_", " ").title()
+            # Print metric line with alignment
             print(
-                f" {'Time (s)':<15} | {mean_str:>10} +/- {stdev_str:<10} | {time_data['count']:<5}"
-            )
-        else:
-            print(f" {'Time (s)':<15} | {'N/A':<25} | {'0':<5}")
-
-        # Print Mop/s on the next line, aligned
-        mops_data = bench_data.get("mops_total")
-        if mops_data:
-            mean_str = f"{mops_data['mean']:.2f}"
-            stdev_str = f"{mops_data['stdev']:.2f}"
-            # Use spaces for alignment
-            print(
-                f"{'':<10} {'':<6} {'':<8} | {'Mop/s total':<15} | {mean_str:>10} +/- {stdev_str:<10} | {mops_data['count']:<5}"
-            )
-        else:
-            print(
-                f"{'':<10} {'':<6} {'':<8} | {'Mop/s total':<15} | {'N/A':<25} | {'0':<5}"
+                header_format.format(
+                    "", metric_label, res1_str, res2_str, percent_diff_str
+                )
             )
 
-        print("-" * 75)
+        print("-" * 95)
 
 
-# --- Plotting Function ---
+# --- Plotting Function (Modified) ---
 
 
 def plot_npb_comparison(agg_data1, agg_data2, label1, label2):
     """
-    Creates separate comparison plots for NPB Time and Mop/s.
+    Creates comparison plots for NPB Time, Mop/s, and Percentage Difference.
     Saves plots as PDF.
     """
     if not PLOT_ENABLED:
@@ -278,8 +288,8 @@ def plot_npb_comparison(agg_data1, agg_data2, label1, label2):
 
     print("\nGenerating NPB comparison plots...")
 
-    label1_short = os.path.basename(label1.rstrip("/\\")) or "Dir 1"
-    label2_short = os.path.basename(label2.rstrip("/\\")) or "Dir 2"
+    label1_short = os.path.basename(label1.rstrip("/\\")) or "Baseline"
+    label2_short = os.path.basename(label2.rstrip("/\\")) or "Comparison"
 
     # Find common benchmarks
     common_benchmarks = sorted(list(set(agg_data1.keys()) & set(agg_data2.keys())))
@@ -292,14 +302,14 @@ def plot_npb_comparison(agg_data1, agg_data2, label1, label2):
         return
 
     print(f"Found {len(common_benchmarks)} common benchmarks for comparison.")
+    plot_bench_labels = common_benchmarks  # Use benchmark names as labels
 
-    # --- Plot 1: Time Comparison ---
+    # --- Plot 1: Time Comparison (Absolute Values) ---
     metric_time = "time_s"
     print(f" - Plotting '{metric_time}'...")
     means1_t, stdevs1_t = [], []
     means2_t, stdevs2_t = [], []
-    plot_labels_t = []
-
+    valid_bench_t = []
     for bench in common_benchmarks:
         d1_t = agg_data1.get(bench, {}).get(metric_time)
         d2_t = agg_data2.get(bench, {}).get(metric_time)
@@ -308,12 +318,12 @@ def plot_npb_comparison(agg_data1, agg_data2, label1, label2):
             stdevs1_t.append(d1_t["stdev"])
             means2_t.append(d2_t["mean"])
             stdevs2_t.append(d2_t["stdev"])
-            plot_labels_t.append(bench)
+            valid_bench_t.append(bench)
 
-    if plot_labels_t:
-        x_indices = np.arange(len(plot_labels_t))
+    if valid_bench_t:
+        x_indices = np.arange(len(valid_bench_t))
         bar_width = 0.35
-        fig, ax = plt.subplots(figsize=(max(8, len(plot_labels_t) * 1.0), 6))
+        fig, ax = plt.subplots(figsize=(max(8, len(valid_bench_t) * 1.0), 6))
         rects1 = ax.bar(
             x_indices - bar_width / 2,
             means1_t,
@@ -336,14 +346,11 @@ def plot_npb_comparison(agg_data1, agg_data2, label1, label2):
         ax.set_ylabel("Time (seconds)")
         ax.set_title("NPB Benchmark Time Comparison")
         ax.set_xticks(x_indices)
-        ax.set_xticklabels(plot_labels_t, rotation=45, ha="right")
+        ax.set_xticklabels(valid_bench_t, rotation=45, ha="right")
         ax.legend()
         ax.grid(axis="y", linestyle="--", alpha=0.6)
-        # ax.bar_label(rects1, padding=3, fmt='%.1f') # Optional labels
-        # ax.bar_label(rects2, padding=3, fmt='%.1f')
         ax.set_ylim(bottom=0)
         fig.tight_layout()
-
         plot_filename = "npb_comparison_time.pdf"
         try:
             plt.savefig(plot_filename, format="pdf", bbox_inches="tight")
@@ -355,13 +362,12 @@ def plot_npb_comparison(agg_data1, agg_data2, label1, label2):
     else:
         print(f"   Skipping Time plot: No common benchmarks with data.")
 
-    # --- Plot 2: Mop/s Comparison ---
+    # --- Plot 2: Mop/s Comparison (Absolute Values) ---
     metric_mops = "mops_total"
     print(f" - Plotting '{metric_mops}'...")
     means1_m, stdevs1_m = [], []
     means2_m, stdevs2_m = [], []
-    plot_labels_m = []
-
+    valid_bench_m = []
     for bench in common_benchmarks:
         d1_m = agg_data1.get(bench, {}).get(metric_mops)
         d2_m = agg_data2.get(bench, {}).get(metric_mops)
@@ -370,12 +376,12 @@ def plot_npb_comparison(agg_data1, agg_data2, label1, label2):
             stdevs1_m.append(d1_m["stdev"])
             means2_m.append(d2_m["mean"])
             stdevs2_m.append(d2_m["stdev"])
-            plot_labels_m.append(bench)
+            valid_bench_m.append(bench)
 
-    if plot_labels_m:
-        x_indices = np.arange(len(plot_labels_m))
+    if valid_bench_m:
+        x_indices = np.arange(len(valid_bench_m))
         bar_width = 0.35
-        fig, ax = plt.subplots(figsize=(max(8, len(plot_labels_m) * 1.0), 6))
+        fig, ax = plt.subplots(figsize=(max(8, len(valid_bench_m) * 1.0), 6))
         rects1 = ax.bar(
             x_indices - bar_width / 2,
             means1_m,
@@ -398,14 +404,11 @@ def plot_npb_comparison(agg_data1, agg_data2, label1, label2):
         ax.set_ylabel("Mop/s Total")
         ax.set_title("NPB Benchmark Mop/s Comparison")
         ax.set_xticks(x_indices)
-        ax.set_xticklabels(plot_labels_m, rotation=45, ha="right")
+        ax.set_xticklabels(valid_bench_m, rotation=45, ha="right")
         ax.legend()
         ax.grid(axis="y", linestyle="--", alpha=0.6)
-        # ax.bar_label(rects1, padding=3, fmt='%.0f') # Optional labels
-        # ax.bar_label(rects2, padding=3, fmt='%.0f')
         ax.set_ylim(bottom=0)
         fig.tight_layout()
-
         plot_filename = "npb_comparison_mops.pdf"
         try:
             plt.savefig(plot_filename, format="pdf", bbox_inches="tight")
@@ -417,10 +420,122 @@ def plot_npb_comparison(agg_data1, agg_data2, label1, label2):
     else:
         print(f"   Skipping Mop/s plot: No common benchmarks with data.")
 
+    # --- Plot 3: Percentage Difference ---
+    print(f" - Plotting Percentage Difference ({label2_short} vs {label1_short})...")
+    percent_diff_time = []
+    percent_diff_mops = []
+    plot_labels_p = []
+
+    for bench in common_benchmarks:
+        d1_t = agg_data1.get(bench, {}).get(metric_time)
+        d2_t = agg_data2.get(bench, {}).get(metric_time)
+        d1_m = agg_data1.get(bench, {}).get(metric_mops)
+        d2_m = agg_data2.get(bench, {}).get(metric_mops)
+
+        # Only include benchmark if both metrics are available in both files
+        if d1_t and d2_t and d1_m and d2_m:
+            # Calculate % diff for Time
+            mean1_t = d1_t["mean"]
+            mean2_t = d2_t["mean"]
+            if abs(mean1_t) > ZERO_THRESHOLD:
+                diff_t = ((mean2_t - mean1_t) / mean1_t) * 100.0
+                percent_diff_time.append(
+                    diff_t if not (math.isnan(diff_t) or math.isinf(diff_t)) else 0
+                )  # Append 0 if invalid? Or skip?
+            elif abs(mean2_t) < ZERO_THRESHOLD:
+                percent_diff_time.append(0.0)  # Both near zero
+            else:
+                percent_diff_time.append(
+                    np.nan
+                )  # Cannot calculate meaningfully, use NaN to skip plotting
+
+            # Calculate % diff for Mop/s
+            mean1_m = d1_m["mean"]
+            mean2_m = d2_m["mean"]
+            if abs(mean1_m) > ZERO_THRESHOLD:
+                diff_m = ((mean2_m - mean1_m) / mean1_m) * 100.0
+                percent_diff_mops.append(
+                    diff_m if not (math.isnan(diff_m) or math.isinf(diff_m)) else 0
+                )
+            elif abs(mean2_m) < ZERO_THRESHOLD:
+                percent_diff_mops.append(0.0)
+            else:
+                percent_diff_mops.append(np.nan)
+
+            # Only add label if at least one valid diff was calculated
+            if not (
+                math.isnan(percent_diff_time[-1]) and math.isnan(percent_diff_mops[-1])
+            ):
+                plot_labels_p.append(bench)
+            else:  # Remove the NaNs if both failed
+                percent_diff_time.pop()
+                percent_diff_mops.pop()
+
+    if plot_labels_p:
+        x_indices = np.arange(len(plot_labels_p))
+        bar_width = 0.35
+        fig, ax = plt.subplots(figsize=(max(8, len(plot_labels_p) * 1.0), 6))
+
+        # Filter out NaN values before plotting - this requires adjusting indices too.
+        # Simpler approach: plot NaNs, they might just appear as gaps or zero depending on MPL version.
+        # Let's proceed assuming NaNs might render as gaps or can be handled.
+        rects1 = ax.bar(
+            x_indices - bar_width / 2,
+            percent_diff_time,
+            bar_width,
+            label="Time % Diff",
+            alpha=0.8,
+        )
+        rects2 = ax.bar(
+            x_indices + bar_width / 2,
+            percent_diff_mops,
+            bar_width,
+            label="Mop/s % Diff",
+            alpha=0.8,
+        )
+
+        ax.set_ylabel("Percentage Difference (%)")
+        ax.set_title(f"NPB Performance % Difference ({label2_short} vs {label1_short})")
+        ax.set_xticks(x_indices)
+        ax.set_xticklabels(plot_labels_p, rotation=45, ha="right")
+        ax.legend()
+        ax.grid(axis="y", linestyle="--", alpha=0.6)
+        ax.axhline(0, color="grey", linewidth=0.8)  # Line at 0%
+
+        ax.bar_label(rects1, padding=3, fmt="%.1f%%")
+        ax.bar_label(rects2, padding=3, fmt="%.1f%%")
+
+        # Adjust y limits to show positive and negative differences clearly
+        max_abs_diff = (
+            max(
+                abs(v)
+                for v in percent_diff_time + percent_diff_mops
+                if not math.isnan(v)
+            )
+            if any(not math.isnan(v) for v in percent_diff_time + percent_diff_mops)
+            else 10
+        )
+        ax.set_ylim(
+            bottom=min(0, -max_abs_diff * 1.15), top=max(0, max_abs_diff * 1.15)
+        )
+
+        fig.tight_layout()
+        plot_filename = "npb_comparison_percent_diff.pdf"
+        try:
+            plt.savefig(plot_filename, format="pdf", bbox_inches="tight")
+            print(f"   Plot saved to '{plot_filename}'")
+        except Exception as e:
+            err_msg = str(e).encode("ascii", "replace").decode("ascii")
+            print(f"   Error saving plot '{plot_filename}': {err_msg}", file=sys.stderr)
+        plt.close(fig)
+    else:
+        print(
+            f"   Skipping Percentage Difference plot: No common benchmarks with data for comparison."
+        )
+
 
 # --- Directory Processing Function ---
-
-
+# (process_directory remains the same as the previous version)
 def process_directory(directory_path):
     """Finds, parses, and aggregates NPB log files in a directory."""
     print(f"\nProcessing directory: {directory_path}")
@@ -454,16 +569,13 @@ def process_directory(directory_path):
         metrics = parse_npb_log(log_file)
 
         if metrics.get("error"):
-            # Only print error if it's not the 'missing key metrics' one, unless verbose
             if "Could not extract key NPB metrics" not in metrics["error"]:
                 print(
                     f"\n   Parse Error in '{os.path.basename(log_file)}': {metrics['error']}",
                     file=sys.stderr,
                 )
             parse_errors += 1
-        elif metrics and metrics.get(
-            "benchmark_name"
-        ):  # Check if metrics dict is valid and has name
+        elif metrics and metrics.get("benchmark_name"):
             all_run_results.append(metrics)
 
     valid_files_parsed = len(all_run_results)
@@ -474,9 +586,8 @@ def process_directory(directory_path):
         )
 
     if valid_files_parsed > 0:
-        # Aggregate results grouped by benchmark name found in this directory
         aggregated_data = aggregate_npb_results(all_run_results)
-        return aggregated_data, valid_files_parsed  # Return aggregated data and count
+        return aggregated_data, valid_files_parsed
     else:
         print(f"No valid data collected from directory '{directory_path}'.")
         return None, 0
@@ -485,41 +596,39 @@ def process_directory(directory_path):
 # --- Main Execution ---
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Compare NASA NPB benchmark logs from two directories, print summaries, and plot comparisons (ASCII only)."
+        description="Compare NASA NPB benchmark logs from two directories, print summaries with % diff, and plot comparisons (ASCII only)."
     )
     parser.add_argument(
         "dir1",
-        metavar="DIRECTORY_1",
+        metavar="BASELINE_DIR",  # Changed label
         type=str,
-        help="Path to the first directory containing NPB benchmark *.log files.",
+        help="Path to the baseline directory containing NPB benchmark *.log files.",
     )
     parser.add_argument(
         "dir2",
-        metavar="DIRECTORY_2",
+        metavar="COMPARISON_DIR",  # Changed label
         type=str,
-        help="Path to the second directory containing NPB benchmark *.log files.",
+        help="Path to the comparison directory containing NPB benchmark *.log files.",
     )
     args = parser.parse_args()
 
-    # Process first directory
+    # Process first directory (baseline)
     agg_data1, count1 = process_directory(args.dir1)
 
-    # Process second directory
+    # Process second directory (comparison)
     agg_data2, count2 = process_directory(args.dir2)
 
-    # Print summaries if data was aggregated
-    if agg_data1:
-        print_npb_summary(agg_data1, args.dir1)
-    if agg_data2:
-        print_npb_summary(agg_data2, args.dir2)
-
-    # Generate comparison plot if both directories yielded data
+    # Print comparison summary if both directories yielded data
     if agg_data1 and agg_data2:
+        print_comparison_summary(agg_data1, agg_data2, args.dir1, args.dir2)
+        # Generate comparison plots
         plot_npb_comparison(agg_data1, agg_data2, args.dir1, args.dir2)
-    elif PLOT_ENABLED:
+    else:
         print(
-            "\nComparison plots cannot be generated as data from both directories is required.",
+            "\nComparison summary and plots cannot be generated as data from both directories is required.",
             file=sys.stderr,
         )
+        if PLOT_ENABLED:  # Check if plotting was supposed to run
+            print("Plotting skipped.", file=sys.stderr)
 
     print("\nScript finished.")
