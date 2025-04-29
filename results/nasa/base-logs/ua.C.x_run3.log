@@ -1,3 +1,5 @@
+{"level":"info","ts":1745950007.9926636,"caller":"frontend/addrfilter.go:53","msg":"=== Launching addrfilter ==="}
+{"level":"info","ts":1745950008.2044826,"caller":"filter/filter.go:303","msg":"configuring bpf kill mode","mode":0}
 
 
  NAS Parallel Benchmarks (NPB3.4-OMP) - UA Benchmark
@@ -11,6 +13,8 @@
  Number of available threads:       96
 
 Step    0: elements refined, merged, total:    4563       0   31942
+{"level":"info","ts":1745950008.3564353,"caller":"filter/filter.go:113","msg":"adding process to filter list","pid":4071475}
+{"level":"info","ts":1745950008.3586698,"caller":"filter/filter.go:381","msg":"updating libc address space","start":"0x7ffff7800000","end":"0x7ffff7a05000"}
 Step    5: elements refined, merged, total:     168    1160   32103
 Step   10: elements refined, merged, total:     173    1464   32033
 Step   15: elements refined, merged, total:     182    1728   31795
@@ -54,7 +58,7 @@ Step  195: elements refined, merged, total:     165    1352   31641
  Verification being performed for class C
  accuracy setting for epsilon =  0.1000000000000E-07
  Comparison of temperature integrals
-           0.1544736587100E-04 0.1544736587100E-04 0.5658815935780E-13
+           0.1544736587100E-04 0.1544736587100E-04 0.5636882540680E-13
  Verification Successful
 
 
@@ -62,11 +66,11 @@ Step  195: elements refined, merged, total:     165    1352   31641
  Class           =                        C
  Size            =                        8
  Iterations      =                      200
- Time in seconds =                    43.93
+ Time in seconds =                    28.78
  Total threads   =                       96
  Avail threads   =                       96
- Mop/s total     =                   199.88
- Mop/s/thread    =                     2.08
+ Mop/s total     =                   305.08
+ Mop/s/thread    =                     3.18
  Operation type  =     coll. point advanced
  Verification    =               SUCCESSFUL
  Version         =                    3.4.3
@@ -88,3 +92,4 @@ Step  195: elements refined, merged, total:     165    1352   31641
  npb@nas.nasa.gov
 
 
+{"level":"info","ts":1745950037.237167,"caller":"filter/filter.go:209","msg":"warn buffer closed, exiting..."}

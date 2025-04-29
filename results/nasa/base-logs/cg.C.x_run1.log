@@ -1,3 +1,5 @@
+{"level":"info","ts":1745949662.5770106,"caller":"frontend/addrfilter.go:53","msg":"=== Launching addrfilter ==="}
+{"level":"info","ts":1745949662.7904546,"caller":"filter/filter.go:303","msg":"configuring bpf kill mode","mode":0}
 
 
  NAS Parallel Benchmarks (NPB3.4-OMP) - CG Benchmark
@@ -6,40 +8,42 @@
  Iterations:                     75
  Number of available threads:    96
 
- Initialization time =           0.557 seconds
+{"level":"info","ts":1745949662.9423904,"caller":"filter/filter.go:113","msg":"adding process to filter list","pid":4056608}
+{"level":"info","ts":1745949662.9427805,"caller":"filter/filter.go:381","msg":"updating libc address space","start":"0x7ffff7800000","end":"0x7ffff7a05000"}
+ Initialization time =           0.555 seconds
 
    iteration           ||r||                 zeta
-        1       0.35322495352873E-12   109.9994423237398
-        5       0.89246584393287E-15    28.6471670038895
-       10       0.91138419622302E-15    28.9496695448999
-       15       0.90678042463550E-15    28.9716336228372
-       20       0.91584033884299E-15    28.9734210663749
-       25       0.90926667796061E-15    28.9735863059384
-       30       0.90825977053914E-15    28.9736033967631
-       35       0.90971502144505E-15    28.9736053266248
-       40       0.90642697469319E-15    28.9736055590699
-       45       0.91045552237793E-15    28.9736055884128
-       50       0.91072807273798E-15    28.9736055922485
-       55       0.90300523059522E-15    28.9736055927634
-       60       0.90786002283427E-15    28.9736055928340
-       65       0.90735202696843E-15    28.9736055928439
-       70       0.90005778560072E-15    28.9736055928453
-       75       0.90129199568042E-15    28.9736055928455
+        1       0.35315756394296E-12   109.9994423237398
+        5       0.89289161031097E-15    28.6471670038896
+       10       0.91146593300794E-15    28.9496695448998
+       15       0.90572016352927E-15    28.9716336228372
+       20       0.91487602649579E-15    28.9734210663749
+       25       0.90903047849313E-15    28.9735863059384
+       30       0.90884737712684E-15    28.9736033967631
+       35       0.91124131940344E-15    28.9736053266248
+       40       0.90699574357755E-15    28.9736055590698
+       45       0.91032550318429E-15    28.9736055884128
+       50       0.90975475358801E-15    28.9736055922484
+       55       0.90467397853163E-15    28.9736055927634
+       60       0.90847971397111E-15    28.9736055928340
+       65       0.90762205531560E-15    28.9736055928440
+       70       0.90136801374406E-15    28.9736055928454
+       75       0.90095743665869E-15    28.9736055928455
  Benchmark completed 
  VERIFICATION SUCCESSFUL 
  Zeta is     0.2897360559285E+02
- Error is    0.1777975066912E-13
+ Error is    0.1581784714701E-13
 
 
  CG Benchmark Completed.
  Class           =                        C
  Size            =                   150000
  Iterations      =                       75
- Time in seconds =                    10.80
+ Time in seconds =                     8.14
  Total threads   =                       96
  Avail threads   =                       96
- Mop/s total     =                 13267.56
- Mop/s/thread    =                   138.20
+ Mop/s total     =                 17613.03
+ Mop/s/thread    =                   183.47
  Operation type  =           floating point
  Verification    =               SUCCESSFUL
  Version         =                    3.4.3
@@ -61,3 +65,4 @@
  npb@nas.nasa.gov
 
 
+{"level":"info","ts":1745949671.5682347,"caller":"filter/filter.go:209","msg":"warn buffer closed, exiting..."}

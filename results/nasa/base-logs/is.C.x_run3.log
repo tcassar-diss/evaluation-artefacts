@@ -1,3 +1,7 @@
+{"level":"info","ts":1745949724.4758701,"caller":"frontend/addrfilter.go:53","msg":"=== Launching addrfilter ==="}
+{"level":"info","ts":1745949724.6985397,"caller":"filter/filter.go:303","msg":"configuring bpf kill mode","mode":0}
+{"level":"info","ts":1745949724.851028,"caller":"filter/filter.go:113","msg":"adding process to filter list","pid":4060169}
+{"level":"info","ts":1745949724.8511922,"caller":"filter/filter.go:381","msg":"updating libc address space","start":"0x7ffff7c00000","end":"0x7ffff7e05000"}
 
 
  NAS Parallel Benchmarks (NPB3.4-OMP) - IS Benchmark
@@ -27,8 +31,8 @@
  Time in seconds =                     0.37
  Total threads   =                       96
  Avail threads   =                       96
- Mop/s total     =                  3610.26
- Mop/s/thread    =                    37.61
+ Mop/s total     =                  3628.03
+ Mop/s/thread    =                    37.79
  Operation type  =              keys ranked
  Verification    =               SUCCESSFUL
  Version         =                    3.4.3
@@ -49,3 +53,4 @@
  npb@nas.nasa.gov
 
 
+{"level":"info","ts":1745949725.4799976,"caller":"filter/filter.go:209","msg":"warn buffer closed, exiting..."}

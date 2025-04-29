@@ -1,3 +1,5 @@
+{"level":"info","ts":1745949944.4909656,"caller":"frontend/addrfilter.go:53","msg":"=== Launching addrfilter ==="}
+{"level":"info","ts":1745949944.7004025,"caller":"filter/filter.go:303","msg":"configuring bpf kill mode","mode":0}
 
 
  NAS Parallel Benchmarks (NPB3.4-OMP) - UA Benchmark
@@ -11,6 +13,8 @@
  Number of available threads:       96
 
 Step    0: elements refined, merged, total:    4563       0   31942
+{"level":"info","ts":1745949944.8541253,"caller":"filter/filter.go:113","msg":"adding process to filter list","pid":4068702}
+{"level":"info","ts":1745949944.8556848,"caller":"filter/filter.go:381","msg":"updating libc address space","start":"0x7ffff7800000","end":"0x7ffff7a05000"}
 Step    5: elements refined, merged, total:     168    1160   32103
 Step   10: elements refined, merged, total:     173    1464   32033
 Step   15: elements refined, merged, total:     182    1728   31795
@@ -62,11 +66,11 @@ Step  195: elements refined, merged, total:     165    1352   31641
  Class           =                        C
  Size            =                        8
  Iterations      =                      200
- Time in seconds =                    42.92
+ Time in seconds =                    29.42
  Total threads   =                       96
  Avail threads   =                       96
- Mop/s total     =                   204.59
- Mop/s/thread    =                     2.13
+ Mop/s total     =                   298.41
+ Mop/s/thread    =                     3.11
  Operation type  =     coll. point advanced
  Verification    =               SUCCESSFUL
  Version         =                    3.4.3
@@ -88,3 +92,4 @@ Step  195: elements refined, merged, total:     165    1352   31641
  npb@nas.nasa.gov
 
 
+{"level":"info","ts":1745949974.4393635,"caller":"filter/filter.go:209","msg":"warn buffer closed, exiting..."}
