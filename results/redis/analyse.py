@@ -10,20 +10,24 @@ import argparse
 import collections
 import csv
 import glob
+import math  # Needed for checking isnan/isinf
 import os
 import statistics
 import sys
-import math # Needed for checking isnan/isinf
 
 # Attempt to import plotting libraries, proceed without plotting if missing
 try:
     import matplotlib.pyplot as plt
     import numpy as np
+
     PLOT_ENABLED = True
 except ImportError:
     PLOT_ENABLED = False
     # Ensure print statements here are ASCII
-    print("Warning: matplotlib or numpy not found. Plotting will be disabled.", file=sys.stderr)
+    print(
+        "Warning: matplotlib or numpy not found. Plotting will be disabled.",
+        file=sys.stderr,
+    )
     print("Install using: pip install matplotlib numpy", file=sys.stderr)
 
 
@@ -46,7 +50,7 @@ TEST_NAME_COLUMN = "test"
 # These will be plotted for absolute values AND percentage difference
 METRICS_TO_PLOT = ["rps", "avg_latency_ms", "p99_latency_ms"]
 # Output file for the text summary
-SUMMARY_FILENAME = "./summary.txt"
+SUMMARY_FILENAME = "summary.txt"
 # Threshold for baseline mean close to zero to avoid division issues
 ZERO_THRESHOLD = 1e-9
 
@@ -66,12 +70,17 @@ def parse_redis_csv(filepath):
     results = {}
     header = None
     try:
-        with open(filepath, "r", newline="", encoding="utf-8", errors="replace") as csvfile:
+        with open(
+            filepath, "r", newline="", encoding="utf-8", errors="replace"
+        ) as csvfile:
             reader = csv.DictReader(csvfile)
             header = reader.fieldnames
 
             if not header or TEST_NAME_COLUMN not in header:
-                print(f"\n   Warning: Skipping file '{os.path.basename(filepath)}'. Invalid header or missing required column '{TEST_NAME_COLUMN}'.", file=sys.stderr)
+                print(
+                    f"\n   Warning: Skipping file '{os.path.basename(filepath)}'. Invalid header or missing required column '{TEST_NAME_COLUMN}'.",
+                    file=sys.stderr,
+                )
                 return None, None
 
             for row in reader:
@@ -88,10 +97,15 @@ def parse_redis_csv(filepath):
                             if col in NUMERIC_COLUMNS:
                                 metrics[col] = float(row[col])
                         except (ValueError, TypeError):
-                            print(f"\n   Warning: Could not convert value '{row[col]}' to float for metric '{col}' in test '{test_name}' in file '{os.path.basename(filepath)}'. Skipping metric.", file=sys.stderr)
+                            print(
+                                f"\n   Warning: Could not convert value '{row[col]}' to float for metric '{col}' in test '{test_name}' in file '{os.path.basename(filepath)}'. Skipping metric.",
+                                file=sys.stderr,
+                            )
                             metrics[col] = None
 
-                if any(v is not None for k, v in metrics.items() if k in NUMERIC_COLUMNS):
+                if any(
+                    v is not None for k, v in metrics.items() if k in NUMERIC_COLUMNS
+                ):
                     results[test_name] = metrics
 
         if not results:
@@ -104,7 +118,10 @@ def parse_redis_csv(filepath):
         return None, None
     except Exception as e:
         err_msg = str(e).encode("ascii", "replace").decode("ascii")
-        print(f"\n   Error processing CSV file '{os.path.basename(filepath)}': {err_msg}", file=sys.stderr)
+        print(
+            f"\n   Error processing CSV file '{os.path.basename(filepath)}': {err_msg}",
+            file=sys.stderr,
+        )
         return None, None
 
 
@@ -148,13 +165,14 @@ def aggregate_redis_results(all_file_results):
 
 # --- Comparison Summary Generation Function (NEW) ---
 
+
 def generate_comparison_summary(results1, results2, label1, label2, header_order):
     """Generates a comparison summary string including percentage difference."""
     if not results1 or not results2:
-        return None # Cannot generate if data is missing
+        return None  # Cannot generate if data is missing
 
-    label1_short = os.path.basename(label1.rstrip('/\\')) or "Baseline"
-    label2_short = os.path.basename(label2.rstrip('/\\')) or "Comparison"
+    label1_short = os.path.basename(label1.rstrip("/\\")) or "Baseline"
+    label2_short = os.path.basename(label2.rstrip("/\\")) or "Comparison"
 
     all_tests = sorted(list(set(results1.keys()) | set(results2.keys())))
     metric_order = (
@@ -171,12 +189,29 @@ def generate_comparison_summary(results1, results2, label1, label2, header_order
     header_line4 = f"Comparison (Dir2): {label2_short}"
     header_line5 = "=" * 95
     col_header_format = "{:<30} | {:<25} | {:<25} | {:<10}"
-    col_headers = col_header_format.format("Test / Metric", f"{label1_short} (Mean+/-Stdev)", f"{label2_short} (Mean+/-Stdev)", "% Diff")
+    col_headers = col_header_format.format(
+        "Test / Metric",
+        f"{label1_short} (Mean+/-Stdev)",
+        f"{label2_short} (Mean+/-Stdev)",
+        "% Diff",
+    )
 
-    summary_lines.extend([header_line1, header_line2, header_line3, header_line4, header_line5, col_headers, separator])
+    summary_lines.extend(
+        [
+            header_line1,
+            header_line2,
+            header_line3,
+            header_line4,
+            header_line5,
+            col_headers,
+            separator,
+        ]
+    )
 
     for test_name in all_tests:
-        summary_lines.append(f"{test_name:<30} | {'':<25} | {'':<25} | ") # Test name line
+        summary_lines.append(
+            f"{test_name:<30} | {'':<25} | {'':<25} | "
+        )  # Test name line
         res1_test = results1.get(test_name, {})
         res2_test = results2.get(test_name, {})
 
@@ -189,7 +224,7 @@ def generate_comparison_summary(results1, results2, label1, label2, header_order
                     precision = 3 if "latency" in metric else 2
                     mean_str = f"{res['mean']:.{precision}f}"
                     stdev_str = f"{res['stdev']:.{precision}f}"
-                    count = res['count']
+                    count = res["count"]
                     return f"{mean_str} +/- {stdev_str} (n={count})"
                 else:
                     return "N/A"
@@ -205,20 +240,25 @@ def generate_comparison_summary(results1, results2, label1, label2, header_order
                 if abs(mean1) > ZERO_THRESHOLD:
                     percent_diff = ((mean2 - mean1) / mean1) * 100.0
                     if not math.isnan(percent_diff) and not math.isinf(percent_diff):
-                         percent_diff_str = f"{percent_diff:+.2f}%"
+                        percent_diff_str = f"{percent_diff:+.2f}%"
                 elif abs(mean2) < ZERO_THRESHOLD:
-                     percent_diff_str = "0.00%"
+                    percent_diff_str = "0.00%"
                 # else: leave as N/A if baseline is zero/tiny and comparison is not
 
-            metric_label = f"  - {metric:<26}" # Indent metric name
-            summary_lines.append(col_header_format.format(metric_label, res1_str, res2_str, percent_diff_str))
+            metric_label = f"  - {metric:<26}"  # Indent metric name
+            summary_lines.append(
+                col_header_format.format(
+                    metric_label, res1_str, res2_str, percent_diff_str
+                )
+            )
 
-        summary_lines.append(separator) # Separator after each test
+        summary_lines.append(separator)  # Separator after each test
 
     return "\n".join(summary_lines)
 
 
 # --- Plotting Function (Modified to add % diff plot) ---
+
 
 def plot_comparison(agg_data1, agg_data2, label1, label2, header_order):
     """
@@ -229,32 +269,39 @@ def plot_comparison(agg_data1, agg_data2, label1, label2, header_order):
         print("\nPlotting disabled as matplotlib/numpy are not installed.")
         return
     if not agg_data1 or not agg_data2:
-        print("\nCannot generate plots due to missing aggregated data.", file=sys.stderr)
+        print(
+            "\nCannot generate plots due to missing aggregated data.", file=sys.stderr
+        )
         return
 
     print("\nGenerating comparison plots...")
 
-    label1_short = os.path.basename(label1.rstrip('/\\')) or "Baseline"
-    label2_short = os.path.basename(label2.rstrip('/\\')) or "Comparison"
+    label1_short = os.path.basename(label1.rstrip("/\\")) or "Baseline"
+    label2_short = os.path.basename(label2.rstrip("/\\")) or "Comparison"
 
     common_tests = sorted(list(set(agg_data1.keys()) & set(agg_data2.keys())))
 
     if not common_tests:
-        print("Error: No common test names found between the two directories. Cannot generate plots.", file=sys.stderr)
+        print(
+            "Error: No common test names found between the two directories. Cannot generate plots.",
+            file=sys.stderr,
+        )
         return
 
     print(f"Found {len(common_tests)} common tests for comparison.")
 
     # Create output directory if it doesn't exist
-    output_plot_dir = "./plots"
+    output_plot_dir = f"./{label1_short}-plots"
     if not os.path.exists(output_plot_dir):
-         try:
-             os.makedirs(output_plot_dir)
-             print(f"Created plot output directory: {output_plot_dir}")
-         except OSError as e:
-             print(f"Error: Could not create plot directory '{output_plot_dir}': {e}", file=sys.stderr)
-             output_plot_dir = "." # Save in current dir as fallback
-
+        try:
+            os.makedirs(output_plot_dir)
+            print(f"Created plot output directory: {output_plot_dir}")
+        except OSError as e:
+            print(
+                f"Error: Could not create plot directory '{output_plot_dir}': {e}",
+                file=sys.stderr,
+            )
+            output_plot_dir = "."  # Save in current dir as fallback
 
     bar_width = 0.35
     metric_order = (
@@ -264,7 +311,7 @@ def plot_comparison(agg_data1, agg_data2, label1, label2, header_order):
     )
 
     percent_diffs_by_metric = collections.defaultdict(list)
-    plot_labels_p = [] # Labels (test names) for the % diff plot
+    plot_labels_p = []  # Labels (test names) for the % diff plot
 
     # --- Plots for Absolute Values ---
     for metric in METRICS_TO_PLOT:
@@ -275,7 +322,7 @@ def plot_comparison(agg_data1, agg_data2, label1, label2, header_order):
 
         means1, stdevs1 = [], []
         means2, stdevs2 = [], []
-        plot_test_labels_abs = [] # Test names used in this specific plot
+        plot_test_labels_abs = []  # Test names used in this specific plot
 
         for test_name in common_tests:
             d1_metric_data = agg_data1.get(test_name, {}).get(metric)
@@ -291,41 +338,59 @@ def plot_comparison(agg_data1, agg_data2, label1, label2, header_order):
                 # While iterating, calculate % diff for later plot
                 mean1 = d1_metric_data["mean"]
                 mean2 = d2_metric_data["mean"]
-                percent_diff = float('nan') # Default to NaN
+                percent_diff = float("nan")  # Default to NaN
                 if abs(mean1) > ZERO_THRESHOLD:
                     diff = ((mean2 - mean1) / mean1) * 100.0
                     if not math.isnan(diff) and not math.isinf(diff):
-                         percent_diff = diff
+                        percent_diff = diff
                 elif abs(mean2) < ZERO_THRESHOLD:
-                     percent_diff = 0.0
+                    percent_diff = 0.0
                 percent_diffs_by_metric[metric].append(percent_diff)
 
-
         if not plot_test_labels_abs:
-            print(f"   Skipping absolute plot for '{metric}': No common tests found with data.")
+            print(
+                f"   Skipping absolute plot for '{metric}': No common tests found with data."
+            )
             continue
 
         # Rebuild percent diff data just for tests included in the absolute plot
         # (This ensures alignment if some tests were skipped)
         current_percent_diffs = []
-        final_plot_labels_p = [] # Reset labels for %diff specific to plotted data
+        final_plot_labels_p = []  # Reset labels for %diff specific to plotted data
         for i, test_name in enumerate(plot_test_labels_abs):
-             # Find index in original common_tests to get corresponding %diff
-             original_index = common_tests.index(test_name)
-             if metric in percent_diffs_by_metric and original_index < len(percent_diffs_by_metric[metric]):
-                  diff_val = percent_diffs_by_metric[metric][original_index]
-                  current_percent_diffs.append(diff_val)
-                  final_plot_labels_p.append(test_name)
-             else: # Should not happen if logic is correct, but safety check
-                 current_percent_diffs.append(float('nan'))
-                 final_plot_labels_p.append(test_name)
-
+            # Find index in original common_tests to get corresponding %diff
+            original_index = common_tests.index(test_name)
+            if metric in percent_diffs_by_metric and original_index < len(
+                percent_diffs_by_metric[metric]
+            ):
+                diff_val = percent_diffs_by_metric[metric][original_index]
+                current_percent_diffs.append(diff_val)
+                final_plot_labels_p.append(test_name)
+            else:  # Should not happen if logic is correct, but safety check
+                current_percent_diffs.append(float("nan"))
+                final_plot_labels_p.append(test_name)
 
         # Plot absolute values
         x_indices_plot = np.arange(len(plot_test_labels_abs))
         fig, ax = plt.subplots(figsize=(max(10, len(plot_test_labels_abs) * 0.8), 6))
-        rects1 = ax.bar(x_indices_plot - bar_width / 2, means1, bar_width, yerr=stdevs1, label=label1_short, capsize=5, alpha=0.8)
-        rects2 = ax.bar(x_indices_plot + bar_width / 2, means2, bar_width, yerr=stdevs2, label=label2_short, capsize=5, alpha=0.8)
+        rects1 = ax.bar(
+            x_indices_plot - bar_width / 2,
+            means1,
+            bar_width,
+            yerr=stdevs1,
+            label=label1_short,
+            capsize=5,
+            alpha=0.8,
+        )
+        rects2 = ax.bar(
+            x_indices_plot + bar_width / 2,
+            means2,
+            bar_width,
+            yerr=stdevs2,
+            label=label2_short,
+            capsize=5,
+            alpha=0.8,
+        )
         metric_title = metric.replace("_", " ").title()
         ax.set_ylabel(metric_title)
         ax.set_title(f"Comparison of {metric_title} by Test Type")
@@ -337,7 +402,7 @@ def plot_comparison(agg_data1, agg_data2, label1, label2, header_order):
         fig.tight_layout()
         plot_filename = os.path.join(output_plot_dir, f"redis_comparison_{metric}.pdf")
         try:
-            plt.savefig(plot_filename, format='pdf', bbox_inches="tight")
+            plt.savefig(plot_filename, format="pdf", bbox_inches="tight")
             print(f"   Absolute plot saved to '{plot_filename}'")
         except Exception as e:
             err_msg = str(e).encode("ascii", "replace").decode("ascii")
@@ -346,56 +411,79 @@ def plot_comparison(agg_data1, agg_data2, label1, label2, header_order):
 
         # Store calculated percent diffs for the final plot
         # Ensure alignment if tests were skipped for absolute plot
-        if metric in METRICS_TO_PLOT: # Only store if it's needed for final plot
-             percent_diffs_by_metric[metric] = current_percent_diffs
-             # Use the labels from the last successfully plotted metric for the %diff x-axis
-             plot_labels_p = final_plot_labels_p
-
+        if metric in METRICS_TO_PLOT:  # Only store if it's needed for final plot
+            percent_diffs_by_metric[metric] = current_percent_diffs
+            # Use the labels from the last successfully plotted metric for the %diff x-axis
+            plot_labels_p = final_plot_labels_p
 
     # --- Plot 4: Percentage Difference ---
     print(f" - Plotting Percentage Difference ({', '.join(METRICS_TO_PLOT)})...")
 
     # Check if we have any valid labels and corresponding data for the %diff plot
-    if not plot_labels_p or not any(metric in percent_diffs_by_metric for metric in METRICS_TO_PLOT):
-         print("   Skipping Percentage Difference plot: No common data found for selected metrics.")
-         return # Exit plotting function if no data
+    if not plot_labels_p or not any(
+        metric in percent_diffs_by_metric for metric in METRICS_TO_PLOT
+    ):
+        print(
+            "   Skipping Percentage Difference plot: No common data found for selected metrics."
+        )
+        return  # Exit plotting function if no data
 
     x_indices_p = np.arange(len(plot_labels_p))
     num_metrics_p = len(METRICS_TO_PLOT)
-    total_width = 0.8 # Total width allocated for bars per group
+    total_width = 0.8  # Total width allocated for bars per group
     single_bar_width = total_width / num_metrics_p
 
-    fig_p, ax_p = plt.subplots(figsize=(max(10, len(plot_labels_p) * 1.2), 6)) # Make wider potentially
+    fig_p, ax_p = plt.subplots(
+        figsize=(max(10, len(plot_labels_p) * 1.2), 6)
+    )  # Make wider potentially
 
     # Calculate offsets for each metric's bar within a group
-    offsets = np.linspace(-total_width / 2 + single_bar_width / 2, total_width / 2 - single_bar_width / 2, num_metrics_p)
+    offsets = np.linspace(
+        -total_width / 2 + single_bar_width / 2,
+        total_width / 2 - single_bar_width / 2,
+        num_metrics_p,
+    )
 
-    plotted_metrics_legend = {} # To store handles for legend
+    plotted_metrics_legend = {}  # To store handles for legend
 
     for i, metric in enumerate(METRICS_TO_PLOT):
-         if metric in percent_diffs_by_metric:
-             # Filter out NaNs for this specific metric before plotting
-             valid_indices = [idx for idx, val in enumerate(percent_diffs_by_metric[metric]) if not math.isnan(val)]
-             valid_x = x_indices_p[valid_indices]
-             valid_diffs = [percent_diffs_by_metric[metric][idx] for idx in valid_indices]
+        if metric in percent_diffs_by_metric:
+            # Filter out NaNs for this specific metric before plotting
+            valid_indices = [
+                idx
+                for idx, val in enumerate(percent_diffs_by_metric[metric])
+                if not math.isnan(val)
+            ]
+            valid_x = x_indices_p[valid_indices]
+            valid_diffs = [
+                percent_diffs_by_metric[metric][idx] for idx in valid_indices
+            ]
 
-             if valid_diffs: # Only plot if there's valid data
-                rects = ax_p.bar(valid_x + offsets[i], valid_diffs, single_bar_width, label=metric.replace('_ms',' (ms)'), alpha=0.8)
-                plotted_metrics_legend[metric.replace('_ms',' (ms)')] = rects
+            if valid_diffs:  # Only plot if there's valid data
+                rects = ax_p.bar(
+                    valid_x + offsets[i],
+                    valid_diffs,
+                    single_bar_width,
+                    label=metric.replace("_ms", " (ms)"),
+                    alpha=0.8,
+                )
+                plotted_metrics_legend[metric.replace("_ms", " (ms)")] = rects
 
-    ax_p.set_ylabel('Percentage Difference (%)')
-    ax_p.set_title(f'Redis Performance % Difference ({label2_short} vs {label1_short})')
+    ax_p.set_ylabel("Percentage Difference (%)")
+    ax_p.set_title(f"Redis Performance % Difference ({label2_short} vs {label1_short})")
     ax_p.set_xticks(x_indices_p)
     ax_p.set_xticklabels(plot_labels_p, rotation=45, ha="right")
     # Use handles collected for legend
-    ax_p.legend(handles=plotted_metrics_legend.values(), labels=plotted_metrics_legend.keys())
-    ax_p.grid(axis='y', linestyle='--', alpha=0.6)
-    ax_p.axhline(0, color='grey', linewidth=0.8) # Line at 0%
+    ax_p.legend(
+        handles=plotted_metrics_legend.values(), labels=plotted_metrics_legend.keys()
+    )
+    ax_p.grid(axis="y", linestyle="--", alpha=0.6)
+    ax_p.axhline(0, color="grey", linewidth=0.8)  # Line at 0%
 
     fig_p.tight_layout()
     plot_filename = os.path.join(output_plot_dir, "redis_comparison_percent_diff.pdf")
     try:
-        plt.savefig(plot_filename, format='pdf', bbox_inches='tight')
+        plt.savefig(plot_filename, format="pdf", bbox_inches="tight")
         print(f"   Percentage Difference plot saved to '{plot_filename}'")
     except Exception as e:
         err_msg = str(e).encode("ascii", "replace").decode("ascii")
@@ -410,14 +498,20 @@ def process_directory(directory_path):
     print(f"\nProcessing directory: {directory_path}")
 
     if not os.path.isdir(directory_path):
-        print(f"Error: Provided path '{directory_path}' is not a valid directory.", file=sys.stderr)
+        print(
+            f"Error: Provided path '{directory_path}' is not a valid directory.",
+            file=sys.stderr,
+        )
         return None, None, 0
 
     search_pattern = os.path.join(directory_path, CSV_FILE_PATTERN)
     csv_files = glob.glob(search_pattern)
 
     if not csv_files:
-        print(f"Warning: No files matching pattern '{CSV_FILE_PATTERN}' found in directory '{directory_path}'.", file=sys.stderr)
+        print(
+            f"Warning: No files matching pattern '{CSV_FILE_PATTERN}' found in directory '{directory_path}'.",
+            file=sys.stderr,
+        )
         return None, None, 0
 
     all_results = []
@@ -425,7 +519,9 @@ def process_directory(directory_path):
     parse_errors = 0
     files_found_count = len(csv_files)
 
-    print(f"Found {files_found_count} file(s) matching '{CSV_FILE_PATTERN}'. Parsing...")
+    print(
+        f"Found {files_found_count} file(s) matching '{CSV_FILE_PATTERN}'. Parsing..."
+    )
 
     for csv_file in csv_files:
         parsed_data, header = parse_redis_csv(csv_file)
@@ -435,12 +531,14 @@ def process_directory(directory_path):
             if header and not first_header:
                 first_header = header
         elif header is None and parsed_data is None:
-             parse_errors += 1
+            parse_errors += 1
 
     valid_files_parsed = len(all_results)
     print(f"Successfully parsed data from {valid_files_parsed} file(s).")
     if parse_errors > 0:
-        print(f"Skipped or encountered errors in {parse_errors} file(s).", file=sys.stderr)
+        print(
+            f"Skipped or encountered errors in {parse_errors} file(s).", file=sys.stderr
+        )
 
     if valid_files_parsed > 0:
         aggregated_data = aggregate_redis_results(all_results)
@@ -457,13 +555,13 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "dir1",
-        metavar="BASELINE_DIR", # Changed label
+        metavar="BASELINE_DIR",  # Changed label
         type=str,
         help="Path to the baseline directory containing Redis benchmark *.csv files.",
     )
     parser.add_argument(
         "dir2",
-        metavar="COMPARISON_DIR", # Changed label
+        metavar="COMPARISON_DIR",  # Changed label
         type=str,
         help="Path to the comparison directory containing Redis benchmark *.csv files.",
     )
@@ -478,24 +576,35 @@ if __name__ == "__main__":
     # Generate and handle comparison summary
     summary_text = None
     if agg_data1 and agg_data2:
-        summary_text = generate_comparison_summary(agg_data1, agg_data2, args.dir1, args.dir2, final_header_order)
+        summary_text = generate_comparison_summary(
+            agg_data1, agg_data2, args.dir1, args.dir2, final_header_order
+        )
 
     if summary_text:
-        print("\n" + summary_text) # Print summary to stdout
+        SUMMARY_FILENAME = f"./{args.dir1}-{SUMMARY_FILENAME}"
+        print("\n" + summary_text)  # Print summary to stdout
         try:
-            with open(SUMMARY_FILENAME, 'w', encoding='ascii') as f_summary:
+            with open(SUMMARY_FILENAME, "w", encoding="ascii") as f_summary:
                 f_summary.write(summary_text)
             print(f"\nComparison summary saved to '{SUMMARY_FILENAME}'")
         except IOError as e:
-            print(f"\nError: Could not write summary to file '{SUMMARY_FILENAME}': {e}", file=sys.stderr)
+            print(
+                f"\nError: Could not write summary to file '{SUMMARY_FILENAME}': {e}",
+                file=sys.stderr,
+            )
     else:
-        print("\nComparison summary cannot be generated due to missing data.", file=sys.stderr)
-
+        print(
+            "\nComparison summary cannot be generated due to missing data.",
+            file=sys.stderr,
+        )
 
     # Generate comparison plots if both directories yielded data
     if agg_data1 and agg_data2:
         plot_comparison(agg_data1, agg_data2, args.dir1, args.dir2, final_header_order)
     elif PLOT_ENABLED:
-        print("\nComparison plots cannot be generated as data from both directories is required.", file=sys.stderr)
+        print(
+            "\nComparison plots cannot be generated as data from both directories is required.",
+            file=sys.stderr,
+        )
 
     print("\nScript finished.")
