@@ -307,7 +307,7 @@ def plot_comparison(agg_data1, agg_data2, label1, label2, header_order):
 
         fig.tight_layout()
 
-        plot_filename = f"comparison_{metric}.pdf"
+        plot_filename = f"plots/comparison_{metric}.pdf"
         try:
             plt.savefig(plot_filename, bbox_inches="tight")
             print(f"   Plot saved to '{plot_filename}'")
