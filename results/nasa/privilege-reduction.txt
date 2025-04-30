@@ -1,0 +1,36 @@
+Scoring: ./syso-dumps/ft.C.x-dump.json
+addrfilter: 18
+seccomp: 38
+privilege reduction: 52.63%
+Scoring: ./syso-dumps/cg.C.x-dump.json
+addrfilter: 18
+seccomp: 38
+privilege reduction: 52.63%
+Scoring: ./syso-dumps/lu.C.x-dump.json
+addrfilter: 19
+seccomp: 38
+privilege reduction: 50.00%
+Scoring: ./syso-dumps/ep.C.x-dump.json
+addrfilter: 18
+seccomp: 38
+privilege reduction: 52.63%
+Scoring: ./syso-dumps/mg.C.x-dump.json
+addrfilter: 18
+seccomp: 38
+privilege reduction: 52.63%
+Scoring: ./syso-dumps/ua.C.x-dump.json
+addrfilter: 22
+seccomp: 38
+privilege reduction: 42.11%
+Scoring: ./syso-dumps/is.C.x-dump.json
+addrfilter: 17
+seccomp: 38
+privilege reduction: 55.26%
+Scoring: ./syso-dumps/bt.C.x-dump.json
+addrfilter: 18
+seccomp: 38
+privilege reduction: 52.63%
+Scoring: ./syso-dumps/sp.C.x-dump.json
+addrfilter: 18
+seccomp: 38
+privilege reduction: 52.63%
