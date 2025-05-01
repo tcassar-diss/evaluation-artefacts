@@ -15,6 +15,17 @@ import os
 import statistics
 import sys
 
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import scienceplots
+import seaborn as sns
+
+font = {"size": 18}
+
+plt.rc("font", **font)
+plt.style.use("science")
+
 # Attempt to import plotting libraries, proceed without plotting if missing
 try:
     import matplotlib.pyplot as plt
@@ -469,7 +480,7 @@ def plot_comparison(agg_data1, agg_data2, label1, label2, header_order):
                 )
                 plotted_metrics_legend[metric.replace("_ms", " (ms)")] = rects
 
-    ax_p.set_ylabel("Percentage Difference (%)")
+    ax_p.set_ylabel(r"Percentage Difference (\%)")
     ax_p.set_title(f"Redis Performance % Difference ({label2_short} vs {label1_short})")
     ax_p.set_xticks(x_indices_p)
     ax_p.set_xticklabels(plot_labels_p, rotation=45, ha="right")

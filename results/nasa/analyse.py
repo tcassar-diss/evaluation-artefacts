@@ -9,7 +9,6 @@ Uses only ASCII characters.
 
 import argparse
 import collections
-
 # import csv # No longer needed
 import glob
 import math  # Needed for checking isnan/isinf
@@ -17,6 +16,18 @@ import os
 import re
 import statistics
 import sys
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import scienceplots
+import seaborn as sns
+
+font = {"size": 18}
+
+plt.rc("font", **font)
+
+plt.style.use("science")
 
 # Attempt to import plotting libraries, proceed without plotting if missing
 try:
@@ -479,7 +490,7 @@ def plot_npb_comparison(agg_data1, agg_data2, label1, label2):
             alpha=0.8,
         )
 
-        ax.set_ylabel("Percentage Difference (%)")
+        ax.set_ylabel(r"Percentage Difference (\%)")
         ax.set_title(f"NPB Performance % Difference ({label2_short} vs {label1_short})")
         ax.set_xticks(x_indices)
         ax.set_xticklabels(plot_labels_p, rotation=45, ha="right")
