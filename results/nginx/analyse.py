@@ -485,7 +485,7 @@ def plot_comparison(agg_data1, agg_data2, label1, label2):
         ax.set_yticks(y_pos)
         ax.set_yticklabels(["Req/Sec"])
         ax.invert_yaxis()
-        ax.legend(loc="lower right")
+        ax.legend(loc="lower right", bbox_to_anchor=(1, 0.5))
         ax.grid(axis="x", linestyle="--", alpha=0.6)
         ax.bar_label(rects1, padding=3, fmt="%.0f")
         ax.bar_label(rects2, padding=3, fmt="%.0f")

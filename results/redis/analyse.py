@@ -458,6 +458,10 @@ def plot_comparison(agg_data1, agg_data2, label1, label2, header_order):
     plotted_metrics_legend = {}  # To store handles for legend
 
     for i, metric in enumerate(METRICS_TO_PLOT):
+
+        if metric == "p99_latency_ms":
+            continue
+
         if metric in percent_diffs_by_metric:
             # Filter out NaNs for this specific metric before plotting
             valid_indices = [
@@ -485,9 +489,17 @@ def plot_comparison(agg_data1, agg_data2, label1, label2, header_order):
     ax_p.set_xticks(x_indices_p)
     ax_p.set_xticklabels(plot_labels_p, rotation=45, ha="right")
     # Use handles collected for legend
+
     ax_p.legend(
-        handles=plotted_metrics_legend.values(), labels=plotted_metrics_legend.keys()
+        handles=plotted_metrics_legend.values(),
+        labels=plotted_metrics_legend.keys(),
+        loc="center left",
+        bbox_to_anchor=(1.02, 0.5),
+        # You might also want ncol=1 if you have many metrics
+        # to force a single vertical column:
+        # ncol=1
     )
+
     ax_p.grid(axis="y", linestyle="--", alpha=0.6)
     ax_p.axhline(0, color="grey", linewidth=0.8)  # Line at 0%
 
